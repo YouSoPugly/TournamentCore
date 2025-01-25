@@ -1,0 +1,6 @@
+name: TournamentCore
+version: '1.0-SNAPSHOT'
+main: xyz.pugly.tournamentCore.TournamentCore
+api-version: '1.21'
+softdepend:
+  - PlaceholderAPI

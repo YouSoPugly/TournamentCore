@@ -1,0 +1,12 @@
+teams:
+  RED:
+    name: "Team 1"
+    color: 255000000 # rgb
+    players:
+      - "YouSoPugly"
+  BLUE:
+    name: "Team 2"
+    color: 000255000
+    players:
+      - "Auxileon"
+# etc.
