@@ -2,7 +2,10 @@ package xyz.pugly.tournamentCore.minigames;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import xyz.pugly.tournamentCore.TournamentCore;
+
+import java.io.File;
 
 public abstract class Minigame implements Timed {
 
@@ -10,7 +13,7 @@ public abstract class Minigame implements Timed {
     protected boolean running;
     protected int time;
 
-    protected ConfigurationSection config;
+    static ConfigurationSection config = new YamlConfiguration();
 
     public Minigame(String name) {
         this.name = name;
@@ -25,6 +28,10 @@ public abstract class Minigame implements Timed {
     }
 
     protected ConfigurationSection getConfig() {
-        return TournamentCore.get().getConfig();
+        if (config == null) {
+            File file = new File(TournamentCore.get().getDataFolder(), "minigames.yml");
+            config = YamlConfiguration.loadConfiguration(file);
+        }
+        return config;
     }
 }

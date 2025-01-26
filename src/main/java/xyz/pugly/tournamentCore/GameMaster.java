@@ -8,12 +8,14 @@ import xyz.pugly.tournamentCore.player.TSpectator;
 import xyz.pugly.tournamentCore.player.TStaff;
 import xyz.pugly.tournamentCore.player.TUser;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 public class GameMaster {
 
     private static Minigame currentGame = null;
+    private static int countdown = 0;
 
     private static final Set<Team> teams = new HashSet<>();
     private static final Set<TSpectator> spectators = new HashSet<>();
@@ -113,7 +115,7 @@ public class GameMaster {
             throw new IllegalStateException("No game set");
         }
 
-        currentGame.start();
+        countdown = 15;
     }
 
     public static void endGame() {
@@ -122,6 +124,36 @@ public class GameMaster {
         }
         currentGame.stop();
         currentGame = null;
+    }
+
+    public static void tick() {
+        if (currentGame == null) {
+            return;
+        }
+
+        if (isGameRunning()) {
+            currentGame.tick();
+            return;
+        }
+
+        if (countdown > 0) {
+            countdown--;
+            //TODO countdown visuals
+            Set<TUser> users = new HashSet<>();
+            users.addAll(getPlayers());
+            users.addAll(getSpectators());
+            for (TUser user : users) {
+                Player p = user.getPlayer().getPlayer();
+                if (p != null) {
+                    p.sendMessage("Game starting in " + countdown + " seconds");
+                }
+            }
+            return;
+        }
+
+        if (countdown == 0 && !isGameRunning()) {
+            currentGame.start();
+        }
     }
 
 }

@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import xyz.pugly.tournamentCore.player.TPlayer;
 
 import java.util.HashSet;
@@ -20,6 +21,8 @@ public final class TournamentCore extends JavaPlugin {
 
     private Set<Team> teams = new HashSet<>();
 
+    private static BukkitRunnable gameLoop;
+
     @Override
     public void onEnable() {
         instance = this;
@@ -30,6 +33,13 @@ public final class TournamentCore extends JavaPlugin {
 
         loadTeams();
 
+        gameLoop = new BukkitRunnable() {
+            @Override
+            public void run() {
+                GameMaster.tick();
+            }
+        };
+        gameLoop.runTaskTimer(this, 0, 20);
     }
 
     @Override
