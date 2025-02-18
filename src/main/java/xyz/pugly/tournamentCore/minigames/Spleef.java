@@ -1,5 +1,6 @@
 package xyz.pugly.tournamentCore.minigames;
 
+import dev.jorel.commandapi.CommandAPICommand;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,22 +14,48 @@ import xyz.pugly.tournamentCore.TournamentCore;
 
 public class Spleef extends Minigame implements Timed, Listener {
 
+    public static CommandAPICommand getCommand() {
+        CommandAPICommand set
+
+        return new CommandAPICommand("spleef")
+                .withPermission("tournament.admin")
+                .executesPlayer((player, args) -> {
+
+                });
+    }
+
     private World world;
     private Location minCorner;
     private Location maxCorner;
 
-    public Spleef() {
+    public Spleef() throws NoSuchFieldException {
         super("spleef");
 
-        config = getConfig().getConfigurationSection("spleef");
+        config = getMinigameConfig().getConfigurationSection("spleef");
         time = getDefaultDuration();
         running = false;
 
         world = Bukkit.getWorld(config.getString("world"));
-        minCorner = config.getLocation("minCorner");
-        maxCorner = config.getLocation("maxCorner");
+        if (world == null) {
+            throw new NoSuchFieldException("World not found");
+        }
+
+        Location c1 = config.getLocation("minCorner");
+        Location c2 = config.getLocation("maxCorner");
+
+        if (c1 == null || c2 == null) {
+            throw new NoSuchFieldException("Corner locations not found");
+        }
+
+        minCorner = new Location(world, Math.min(c1.getX(), c2.getX()), Math.min(c1.getY(), c2.getY()), Math.min(c1.getZ(), c2.getZ()));
+        maxCorner = new Location(world, Math.max(c1.getX(), c2.getX()), Math.max(c1.getY(), c2.getY()), Math.max(c1.getZ(), c2.getZ()));
 
         Bukkit.getPluginManager().registerEvents(this, TournamentCore.get());
+    }
+
+    @Override
+    public int getDefaultDuration() {
+        return config.getInt("defaultDuration");
     }
 
     @Override

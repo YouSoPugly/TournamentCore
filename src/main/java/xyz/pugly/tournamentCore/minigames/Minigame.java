@@ -9,11 +9,12 @@ import java.io.File;
 
 public abstract class Minigame implements Timed {
 
-    protected final String name;
-    protected boolean running;
-    protected int time;
+    String name;
+    boolean running;
+    int time;
+    ConfigurationSection config;
 
-    static ConfigurationSection config = new YamlConfiguration();
+    static YamlConfiguration minigameConfig;
 
     public Minigame(String name) {
         this.name = name;
@@ -23,15 +24,18 @@ public abstract class Minigame implements Timed {
         return name;
     }
 
-    public int getDefaultDuration() {
-        return config.getInt("duration");
-    }
+    public abstract int getDefaultDuration();
 
-    protected ConfigurationSection getConfig() {
-        if (config == null) {
+    protected YamlConfiguration getMinigameConfig() {
+        if (minigameConfig == null) {
             File file = new File(TournamentCore.get().getDataFolder(), "minigames.yml");
-            config = YamlConfiguration.loadConfiguration(file);
+            minigameConfig = new YamlConfiguration();
+            try {
+                minigameConfig.load(file);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-        return config;
+        return minigameConfig;
     }
 }

@@ -1,12 +1,12 @@
 teams:
   RED:
     name: "Team 1"
-    color: 255000000 # rgb
+    color: FF0000
     players:
       - "YouSoPugly"
   BLUE:
     name: "Team 2"
-    color: 000255000
+    color: 0000FF
     players:
       - "Auxileon"
 # etc.
