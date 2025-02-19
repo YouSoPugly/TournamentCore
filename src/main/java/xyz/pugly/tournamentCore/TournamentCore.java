@@ -3,14 +3,12 @@ package xyz.pugly.tournamentCore;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.arguments.MultiLiteralArgument;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import xyz.pugly.tournamentCore.minigames.Spleef;
 import xyz.pugly.tournamentCore.player.TPlayer;
 
 import java.io.File;

@@ -1,21 +1,18 @@
 package xyz.pugly.tournamentCore;
 
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-import xyz.pugly.tournamentCore.minigames.Minigame;
 import xyz.pugly.tournamentCore.player.TPlayer;
 import xyz.pugly.tournamentCore.player.TSpectator;
 import xyz.pugly.tournamentCore.player.TStaff;
-import xyz.pugly.tournamentCore.player.TUser;
+import xyz.pugly.tournamentCore.states.State;
+import xyz.pugly.tournamentCore.states.WaitingState;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 public class GameMaster {
 
-    private static Minigame currentGame = null;
-    private static int countdown = 0;
+    private static State currentState = new WaitingState(null);
 
     private static final Set<Team> teams = new HashSet<>();
     private static final Set<TSpectator> spectators = new HashSet<>();
@@ -93,66 +90,12 @@ public class GameMaster {
         return getTeam(getPlayer(player));
     }
 
-    public static boolean isGameRunning() {
-        return currentGame.isRunning();
-    }
-
-    public static Minigame getCurrentGame() {
-        return currentGame;
-    }
-
-    public static void setGame(Minigame game) {
-        currentGame = game;
-        currentGame.setTime(currentGame.getDefaultDuration());
-    }
-
-    public static void startGame() {
-        if (isGameRunning()) {
-            throw new IllegalStateException("Game is already running");
-        }
-
-        if (currentGame == null) {
-            throw new IllegalStateException("No game set");
-        }
-
-        countdown = 15;
-    }
-
-    public static void endGame() {
-        if (!isGameRunning()) {
-            throw new IllegalStateException("Game is not running");
-        }
-        currentGame.stop();
-        currentGame = null;
-    }
-
     public static void tick() {
-        if (currentGame == null) {
-            return;
-        }
-
-        if (isGameRunning()) {
-            currentGame.tick();
-            return;
-        }
-
-        if (countdown > 0) {
-            countdown--;
-            //TODO countdown visuals
-            Set<TUser> users = new HashSet<>();
-            users.addAll(getPlayers());
-            users.addAll(getSpectators());
-            for (TUser user : users) {
-                Player p = user.getPlayer().getPlayer();
-                if (p != null) {
-                    p.sendMessage("Game starting in " + countdown + " seconds");
-                }
-            }
-            return;
-        }
-
-        if (countdown == 0 && !isGameRunning()) {
-            currentGame.start();
+        State nextState = currentState.tick();
+        if (nextState != null) {
+            currentState.onExit();
+            currentState = nextState;
+            currentState.onEnter();
         }
     }
 
