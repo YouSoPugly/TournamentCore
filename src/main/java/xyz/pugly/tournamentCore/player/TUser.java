@@ -14,4 +14,8 @@ public abstract class TUser {
         return player;
     }
 
+    public void sendMessage(String message) {
+        player.getPlayer().sendMessage(message);
+    }
+
 }

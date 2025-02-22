@@ -91,12 +91,20 @@ public class GameMaster {
     }
 
     public static void tick() {
-        State nextState = currentState.tick();
+        State nextState = currentState.update();
         if (nextState != null) {
-            currentState.onExit();
-            currentState = nextState;
-            currentState.onEnter();
+            setState(nextState);
         }
+    }
+
+    public static State getCurrentState() {
+        return currentState;
+    }
+
+    public static void setState(State state) {
+        currentState.onExit();
+        currentState = state;
+        currentState.onEnter();
     }
 
 }

@@ -3,6 +3,7 @@ package xyz.pugly.tournamentCore;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import dev.jorel.commandapi.CommandAPICommand;
+import dev.jorel.commandapi.annotations.Command;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -10,6 +11,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import xyz.pugly.tournamentCore.player.TPlayer;
+import xyz.pugly.tournamentCore.states.minigames.TestGameState;
 
 import java.io.File;
 import java.util.HashSet;
@@ -99,36 +101,48 @@ public final class TournamentCore extends JavaPlugin {
 //                    return 1;
 //                });
 
-        CommandAPICommand gameEnd = new CommandAPICommand("end")
-                .executes((sender, args) -> {
-                    if (!GameMaster.isGameRunning()) {
-                        return 1;
-                    }
-                    GameMaster.endGame();
-                    return 1;
-                });
-
-        new CommandAPICommand("game")
-                .withPermission("tc.game")
-                .withSubcommands(gameEnd)
-                .register();
+//        CommandAPICommand gameEnd = new CommandAPICommand("end")
+//                .executes((sender, args) -> {
+//                    if (!GameMaster.isGameRunning()) {
+//                        return 1;
+//                    }
+//                    GameMaster.endGame();
+//                    return 1;
+//                });
+//
+//        new CommandAPICommand("game")
+//                .withPermission("tc.game")
+//                .withSubcommands(gameEnd)
+//                .register();
 
         // TOURNAMENT CONTROLLER COMMANDS
 
         CommandAPICommand test = new CommandAPICommand("test")
                 .withPermission("tc.test")
                 .executes((sender, args) -> {
-                    try {
-                        GameMaster.setGame(new Spleef());
-                        GameMaster.startGame();
-                    } catch (NoSuchFieldException e) {
-                        e.printStackTrace();
+                    GameMaster.setState(new TestGameState(GameMaster.getCurrentState(), GameMaster.getTeams()));
+                    sender.sendMessage("Test game started");
+                    return 1;
+                });
+
+        CommandAPICommand players = new CommandAPICommand("players")
+                .executes((sender, args) -> {
+                    for (TPlayer player : GameMaster.getPlayers()) {
+                        sender.sendMessage(player.getPlayer().getName());
+                    }
+                    return 1;
+                });
+
+        CommandAPICommand teams = new CommandAPICommand("teams")
+                .executes((sender, args) -> {
+                    for (Team team : GameMaster.getTeams()) {
+                        sender.sendMessage(team.getName());
                     }
                     return 1;
                 });
 
         new CommandAPICommand("tc")
-                .withSubcommands(test)
+                .withSubcommands(test, players, teams)
                 .register();
     }
 }
