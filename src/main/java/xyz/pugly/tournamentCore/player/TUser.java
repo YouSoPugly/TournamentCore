@@ -1,5 +1,6 @@
 package xyz.pugly.tournamentCore.player;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.OfflinePlayer;
 
 public abstract class TUser {
@@ -14,8 +15,14 @@ public abstract class TUser {
         return player;
     }
 
+    public void sendMessage(Component message) {
+        if (player.getPlayer() != null)
+            player.getPlayer().sendMessage(message);
+    }
+
     public void sendMessage(String message) {
-        player.getPlayer().sendMessage(message);
+        if (player.getPlayer() != null)
+            player.getPlayer().sendMessage(message);
     }
 
 }
