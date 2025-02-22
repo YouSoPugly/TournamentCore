@@ -40,6 +40,9 @@ public class GameMaster {
 
     public static void addTeam(Team team) {
         teams.add(team);
+        for (TPlayer player : team.getPlayers()) {
+            addPlayer(player, team);
+        }
     }
 
     public static void addSpectator(TSpectator spectator) {

@@ -1,6 +1,7 @@
 package xyz.pugly.tournamentCore.papi;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import net.kyori.adventure.text.TextComponent;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import xyz.pugly.tournamentCore.GameMaster;
@@ -27,6 +28,6 @@ public class TeamExpansion extends PlaceholderExpansion {
         if (GameMaster.getPlayer(player) == null) {
             return "NO TEAM";
         }
-        return GameMaster.getTeam(player).getName();
+        return ((TextComponent) GameMaster.getTeam(player).getName()).content();
     }
 }

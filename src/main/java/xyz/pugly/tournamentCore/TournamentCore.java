@@ -12,10 +12,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import xyz.pugly.tournamentCore.player.TPlayer;
 import xyz.pugly.tournamentCore.states.minigames.TestGameState;
+import xyz.pugly.tournamentCore.utils.Logger.*;
 
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
+
+import static xyz.pugly.tournamentCore.utils.Logger.info;
+import static xyz.pugly.tournamentCore.utils.Logger.warn;
 
 public final class TournamentCore extends JavaPlugin {
 
@@ -29,13 +33,13 @@ public final class TournamentCore extends JavaPlugin {
 
     @Override
     public void onLoad() {
+        instance = this;
         CommandAPI.onLoad(new CommandAPIBukkitConfig(this).verboseOutput(true)); // Load with verbose output
     }
 
     @Override
     public void onEnable() {
-        instance = this;
-
+        info("Enabling TournamentCore");
         CommandAPI.onEnable();
 
         // TODO temp delete old config
@@ -58,6 +62,7 @@ public final class TournamentCore extends JavaPlugin {
         gameLoop.runTaskTimer(this, 0, 20);
 
         registerCommands();
+        info("TournamentCore enabled");
     }
 
     @Override
@@ -72,23 +77,24 @@ public final class TournamentCore extends JavaPlugin {
     public void loadTeams() {
         ConfigurationSection teams = getConfig().getConfigurationSection("teams");
         if (teams == null) {
-            getLogger().warning("No teams found in config");
+            warn("No teams found in config");
             return;
         }
 
         for (String teamName : teams.getKeys(false)) {
             ConfigurationSection team = teams.getConfigurationSection(teamName);
             if (team == null) {
-                getLogger().warning("No team found for " + teamName);
+                warn("No team found for " + teamName);
                 continue;
             }
 
-            Team newTeam = new Team(teamName, Color.fromRGB(Integer.parseInt(team.getString("color"), 16)));
+            Team newTeam = new Team(teamName, team.getString("name"), Color.fromRGB(Integer.parseInt(team.getString("color"), 16)));
 
             for (String playerName : team.getStringList("players")) {
                 newTeam.addPlayer(new TPlayer(Bukkit.getOfflinePlayer(playerName), newTeam));
             }
 
+            GameMaster.addTeam(newTeam);
         }
     }
 
@@ -127,14 +133,16 @@ public final class TournamentCore extends JavaPlugin {
 
         CommandAPICommand players = new CommandAPICommand("players")
                 .executes((sender, args) -> {
+                    sender.sendMessage("Players:");
                     for (TPlayer player : GameMaster.getPlayers()) {
-                        sender.sendMessage(player.getPlayer().getName());
+                        sender.sendMessage(player.toString());
                     }
                     return 1;
                 });
 
         CommandAPICommand teams = new CommandAPICommand("teams")
                 .executes((sender, args) -> {
+                    sender.sendMessage("Teams:");
                     for (Team team : GameMaster.getTeams()) {
                         sender.sendMessage(team.getName());
                     }
